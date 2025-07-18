@@ -18,7 +18,7 @@ try:
     import autogen
     from autogen import ConversableAgent, UserProxyAgent
 except ImportError as e:
-    raise ImportError(f"AutoGen не установлен. Установите: pip install pyautogen. Ошибка: {e}")
+    raise ImportError(f"AutoGen не установлен. Установите: pip install ag2. Ошибка: {e}")
 
 # Конфигурация логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
