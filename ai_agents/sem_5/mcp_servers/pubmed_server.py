@@ -42,8 +42,7 @@ mcp = FastMCP(
 - search_medical_articles: Поиск статей в PubMed по медицинской теме
 - get_article_details: Получение полной информации о статье
 - summarize_medical_evidence: Обобщение данных из нескольких статей
-""",
-    lang="ru"
+"""
 )
 
 @mcp.tool()
