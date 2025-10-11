@@ -1,9 +1,9 @@
 # python 3.12.11
 
 # base
-mcp>=1.13.1
-qwen_agent>=0.0.29
-pydantic>=2.11.7
+mcp>=1.17.0
+qwen_agent>=0.0.31
+pydantic>=2.12.0
 
 # pubmed
 pymed>=0.8.9
@@ -14,13 +14,13 @@ googletrans>=4.0.2
 # https://testnet.binance.vision/
 python-binance>=1.0.29
 ta>=0.11.0
-pandas>=2.3.2
+pandas>=2.3.3
 python-dotenv>=1.1.1
 
 # astrology
 geopy>=2.4.1
 pytz>=2025.2
-timezonefinder>=8.0.0
+timezonefinder>=8.1.0
 kerykeion>=4.26.3
 
 # arxiv
@@ -28,6 +28,6 @@ arxiv>=2.2.0
 
 # tg parser
 # cli python3 -m playwright install-deps chromium
-playwright>=1.54.0
+playwright>=1.55.0
 scrapy>=2.13.3
 scrapy-playwright>=0.0.44
