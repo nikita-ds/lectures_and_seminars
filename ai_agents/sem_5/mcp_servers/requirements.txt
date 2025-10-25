@@ -21,7 +21,7 @@ python-dotenv>=1.1.1
 geopy>=2.4.1
 pytz>=2025.2
 timezonefinder>=8.1.0
-kerykeion>=5.0.2
+kerykeion==4.26.0
 
 # arxiv
 arxiv>=2.2.0
