@@ -26,11 +26,13 @@ mcp = FastMCP(
 Особенности данных:
 - Данные обновляются ежедневно
 - Каждый пост содержит: источник, заголовок, описание, дату публикации и ссылку
+- Основные источники: 'Data канальи Никиты Зелинского'
 
 Примеры запросов пользователей:
-- Что писали про языковые модели за последние 3 дня?
-- Какие были новости про бенчмарки?
-- Какие вакансии сейчас обсуждают?
+- "Что писали про языковые модели за последние 3 дня?"
+- "Покажи посты 'Модели Vikhr' за май"
+- "Какие были новости про бенчмарки?"
+- "Самые активные каналы на прошлой неделе"
 """
 )
 
@@ -61,32 +63,53 @@ def parse_date(date_str: str) -> Optional[datetime]:
 def load_posts_data() -> List[Dict[str, Any]]:
     """
     Загрузка и предобработка данных о постах.
+    Преобразует Unix timestamp в datetime и приводит поля к ожидаемому формату.
     """
     path = "tg_data/news.json"
     
     try:
         with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+            raw_data = json.load(f)
         
-        for post in data:
-            if 'published_date' in post:
-                post['published_date'] = parse_date(post['published_date'])
-        
-        logger.info(f"Загружено {len(data)} постов")
+        processed_data = []
 
-        return data
+        for item in raw_data:
+            try:
+                published_date = datetime.fromtimestamp(item['date'])
+            except (ValueError, TypeError, KeyError):
+
+                logger.warning(f"Некорректная дата в записи: {item.get('date')}")
+                continue
+
+            text = item.get("text", "")
+ 
+            post = {
+                "source": item.get("channel", "unknown"),
+                "title": (text[:50] + "...") if len(text) > 50 else text,
+                "description": item.get("text", ""),
+                "published_date": published_date,
+                "link": item.get("link", ""),
+            }
+            processed_data.append(post)
+        
+        logger.info(f"Загружено и обработано {len(processed_data)} постов")
+
+        return processed_data
+
     except Exception as e:
         logger.error(f"Ошибка загрузки данных: {str(e)}")
 
         return []
 
 @mcp.tool()
-async def search_posts(context: Context,
-                       sources: Optional[List[str]] = None,
-                       start_date: Optional[str] = None,
-                       end_date: Optional[str] = None,
-                       keywords: Optional[List[str]] = None,
-                       limit: int = 5) -> str:
+async def search_posts(
+    context: Context,
+    sources: Optional[List[str]] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    keywords: Optional[List[str]] = None,
+    limit: int = 5
+) -> str:
     """
     Поиск постов в социальных сетях по заданным критериям
     """
@@ -119,7 +142,7 @@ async def search_posts(context: Context,
 
             if not any(kw.lower() in content for kw in keywords if kw):
                 continue
-                
+        
         filtered_post = {
             "source": post.get("source"),
             "title": post.get("title"),
@@ -137,9 +160,11 @@ async def search_posts(context: Context,
     return json.dumps(filtered_posts, ensure_ascii=False, indent=2)
 
 @mcp.tool()
-async def analyze_activity(context: Context,
-                           period_days: int = 7,
-                           top_sources: int = 5) -> str:
+async def analyze_activity(
+    context: Context,
+    period_days: int = 7,
+    top_sources: int = 5
+) -> str:
     """
     Анализ активности по источникам за указанный период
     """
